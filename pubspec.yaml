@@ -1,0 +1,43 @@
+name: qrmeet
+description: A new Flutter project.
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.16.2 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  get:
+  cupertino_icons: ^1.0.2
+  http: ^0.13.4
+  flutter_localizations:
+    sdk: flutter  
+  intl: ^0.17.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0
+  
+flutter:
+  uses-material-design: true
+  generate: true
+  assets:
+        - assets/backgroundImages/
+        - assets/btnImages/
+        - assets/elementImages/
+        - assets/enviromentImages/
+        - assets/itemImages/
+        - assets/structureImages/
+        - assets/unitImages/
+  fonts:
+    - family: SourceCodePro
+      fonts:
+        - asset: fonts/SourceCodePro-Black.ttf
+        - asset: fonts/SourceCodePro-Bold.ttf
+        - asset: fonts/SourceCodePro-Medium.ttf
+        - asset: fonts/SourceCodePro-Regular.ttf
+        - asset: fonts/SourceCodePro-Italic.ttf
+  
