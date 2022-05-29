@@ -4,5 +4,8 @@
   "adventure": "Macera",
   "trade_page": "Takas",
   "local_market": "Yerel Market",
-  "workshop": "Atölye"
+  "workshop": "Atölye",
+  "login_page": "Giriş",
+  "user_list": "Kullanıcılar",
+  "username_hint": "Kullanıcı Adı"
 }

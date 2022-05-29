@@ -4,5 +4,8 @@
   "adventure": "Adventure",
   "trade_page": "Trade",
   "local_market": "Local Market",
-  "workshop": "Workshop"
+  "workshop": "Workshop",
+  "login_page": "Login",
+  "user_list": "User List",
+  "username_hint": "Username"
 }

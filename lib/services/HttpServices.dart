@@ -22,4 +22,17 @@ class HttpServices {
       return null;
     }
   }
+
+  static Future<Source?> getLoginStatus() async {
+    var url = 'http://89.252.153.250:8081/api/users';
+    final response = await http.get(Uri.parse(url));
+    debugPrint("kerimDebug ${response.statusCode}");
+    if (response.statusCode == 200) {
+      //List<Source>? sources = sourcesJson !=null ? List.from(sourcesJson) : null;
+      return singleSourceFromJson(response.body);
+    } else {
+      debugPrint("kerimDebug null geldi ");
+      return null;
+    }
+  }
 }
