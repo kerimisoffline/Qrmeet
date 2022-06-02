@@ -6,6 +6,10 @@
   "local_market": "Yerel Market",
   "workshop": "Atölye",
   "login_page": "Giriş",
+  "register_page": "Kayıt Ol",
   "user_list": "Kullanıcılar",
-  "username_hint": "Kullanıcı Adı"
+  "username_hint": "Kullanıcı Adı",
+  "mail" : "Mail",
+  "password" : "Şifre",
+  "login_page_btn" : "Giriş Yap"
 }

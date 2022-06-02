@@ -6,6 +6,10 @@
   "local_market": "Local Market",
   "workshop": "Workshop",
   "login_page": "Login",
+  "register_page": "Register",
   "user_list": "User List",
-  "username_hint": "Username"
+  "username_hint": "Username",
+  "mail" : "Mail",
+  "password" : "Şifre",
+  "login_page_btn" : "Log Into"
 }

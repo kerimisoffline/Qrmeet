@@ -1,10 +1,11 @@
-import 'dart:ffi';
-import 'dart:html';
+//import 'dart:ffi';
+//import 'dart:html';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qrmeet/models/Source.dart';
 import 'package:qrmeet/services/HttpServices.dart';
+import 'package:qrmeet/ui/login/register_page.dart';
 import 'package:qrmeet/ui/user_list.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -51,23 +52,11 @@ class Controller extends GetxController {
     }
   }
 
-  void fetchLogin() async {
-    debugPrint("fetchLogin");
-    try {
-      var sources = await HttpServices.getLoginStatus();
-      if (sources != null) {
-        debugPrint("kerimDebug2 $sources");
-        loginResponse = so
-      } else {
-        debugPrint('null geldi');
-      }
-    } catch (err) {
-      debugPrint('Caught error: $err');
-    }
-  }
 }
 
 class Home extends StatelessWidget {
+  const Home({Key? key}) : super(key: key);
+
   @override
   Widget build(context) {
     final Controller controller = Get.put(Controller());
@@ -87,6 +76,18 @@ class Home extends StatelessWidget {
                   ),
                 ),
                 onPressed: () => Get.to(LoginPage()),
+              ),
+            ),
+            Center(
+              child: ElevatedButton(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    AppLocalizations.of(context)!.register_page,
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ),
+                onPressed: () => Get.to(RegisterPage()),
               ),
             ),
             Center(
