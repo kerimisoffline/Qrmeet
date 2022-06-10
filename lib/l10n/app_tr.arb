@@ -11,5 +11,6 @@
   "username_hint": "Kullanıcı Adı",
   "mail" : "Mail",
   "password" : "Şifre",
-  "login_page_btn" : "Giriş Yap"
+  "login_page_btn" : "Giriş Yap",
+  "app_name" : "QrMeet"
 }

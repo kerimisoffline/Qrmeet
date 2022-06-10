@@ -1,32 +1,40 @@
 //import 'dart:ffi';
 //import 'dart:html';
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrmeet/models/Source.dart';
-import 'package:qrmeet/services/HttpServices.dart';
+import 'package:qrmeet/models/source.dart';
+import 'package:qrmeet/models/user.dart';
+import 'package:qrmeet/services/http_services.dart';
+import 'package:qrmeet/ui/landing/landing_page.dart';
 import 'package:qrmeet/ui/login/register_page.dart';
 import 'package:qrmeet/ui/user_list.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrmeet/ui/login/login_page.dart';
+import 'package:qrmeet/utils/http_sertificate.dart';
 
-void main() => runApp(GetMaterialApp(
+void main(){
+  HttpOverrides.global=MyHttpOverrides();
+  runApp(GetMaterialApp(
     title: "QrMeet",
     theme: ThemeData(fontFamily: "Poppins"),
     debugShowCheckedModeBanner: false,
-    localizationsDelegates: [
+    localizationsDelegates: const [
       AppLocalizations.delegate,
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
       GlobalCupertinoLocalizations.delegate,
     ],
     supportedLocales: AppLocalizations.supportedLocales,
-    home: Home()));
+    home: const Home()));
+}
 
 class Controller extends GetxController {
   var count = 0.obs;
-  var sourceList = <Source>[].obs;
+  var userList = <User>[].obs;
   var loginResponse = Source;
 
   increment() => count++;
@@ -40,10 +48,10 @@ class Controller extends GetxController {
   void fetchElements() async {
     debugPrint("kerimDebug1");
     try {
-      var sources = await HttpServices.fetchSources();
-      if (sources != null) {
-        debugPrint("kerimDebug2 $sources");
-        sourceList.assignAll(sources);
+      var usersResponse = await HttpServices.fetchUsers();
+      if (usersResponse != null) {
+        debugPrint("kerimDebug2 $usersResponse");
+        userList.assignAll(usersResponse);
       } else {
         debugPrint('null geldi');
       }
@@ -51,7 +59,6 @@ class Controller extends GetxController {
       debugPrint('Caught error: $err');
     }
   }
-
 }
 
 class Home extends StatelessWidget {
@@ -75,7 +82,7 @@ class Home extends StatelessWidget {
                     style: const TextStyle(fontSize: 24),
                   ),
                 ),
-                onPressed: () => Get.to(LoginPage()),
+                onPressed: () => Get.to(LandingPage()),
               ),
             ),
             Center(

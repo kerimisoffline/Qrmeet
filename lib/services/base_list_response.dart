@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class BaseListResponse<T> {
-  bool status;
-  String message;
+  bool? status;
+  String? message;
   List<T>? data;
 
   BaseListResponse(

@@ -10,18 +10,18 @@ class UserList extends StatelessWidget {
   @override
   Widget build(context) {
     controller.fetchElements();
-    debugPrint("list ${controller.sourceList.length}");
+    debugPrint("list ${controller.userList.length}");
     return Scaffold(
         appBar: AppBar(title: const Text("UserList Page")),
         body: Center(
             child: GetBuilder<Controller>(
                 builder: (_dx) => ListView.builder(
-                    itemCount: _dx.sourceList.length,
+                    itemCount: _dx.userList.length,
                     itemBuilder: (context, index) {
                       return Card(
                         child: ListTile(
                           title: Text(
-                            _dx.sourceList[index].username,
+                            _dx.userList[index].username,
                             style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w300),

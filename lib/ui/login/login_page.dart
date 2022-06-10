@@ -1,15 +1,18 @@
 import 'dart:math';
-import 'package:qrmeet/services/HttpServices.dart';
+import 'package:qrmeet/services/http_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qrmeet/main.dart';
+import 'package:qrmeet/ui/hits/hits_page.dart';
+import 'package:qrmeet/ui/landing/landing_page.dart';
 import 'package:qrmeet/utils/converter.dart';
 import 'package:qrmeet/utils/get_screensize.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../utils/dialog.dart';
+
 class LoginController extends GetxController {
   var _passwordVisible = false.obs;
-
   void changeVisibility() {
     _passwordVisible.value = !_passwordVisible.value;
     update();
@@ -20,9 +23,10 @@ class LoginController extends GetxController {
     debugPrint(mail);
     debugPrint(generatedPass);
     try {
-      var sources = await HttpServices.getLoginStatus(mail, generatedPass);
+      var sources = await HttpServices.getLoginStatusBase(mail, generatedPass);
       if (sources != null) {
-        debugPrint("kerimDebug2 $sources");
+        debugPrint("kerimDebug2 ${sources.username}");
+        Get.to(HitsPage());
       } else {
         debugPrint('null geldi');
       }
