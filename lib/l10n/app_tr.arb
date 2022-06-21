@@ -11,6 +11,11 @@
   "username_hint": "Kullanıcı Adı",
   "mail" : "Mail",
   "password" : "Şifre",
+  "re_password" : "Şifre Tekrar",
   "login_page_btn" : "Giriş Yap",
-  "app_name" : "QrMeet"
+  "app_name" : "QrMeet",
+  "ok" : "Tamam",
+  "click_to_sign" : "kayıt olmak için tıkla",
+  "click_to_login" : "giriş yapmak için tıkla",
+  "click_forgot_pass" : "şifreni unuttuysan tıkla"
 }

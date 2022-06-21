@@ -1,22 +1,22 @@
 class User {
-  int id;
-  String username;
-  String mail;
-  String password;
-  int status;
+  int? id;
+  String? username;
+  String? mail;
+  String? password;
+  int? status;
   DateTime? createdTime;
   DateTime? lastOnline;
-  String userPic;
+  String? userPic;
 
   User({
-    required this.id, 
-    required this.username, 
-    required this.mail, 
-    required this.password, 
-    required this.status,
-    required this.createdTime, 
-    required this.lastOnline, 
-    required this.userPic
+    this.id, 
+    this.username, 
+    this.mail, 
+    this.password, 
+    this.status,
+    this.createdTime, 
+    this.lastOnline, 
+    this.userPic
   });
 
   factory User.fromJson(Map<String, dynamic> json) {

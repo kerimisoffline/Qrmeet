@@ -21,7 +21,7 @@ class UserList extends StatelessWidget {
                       return Card(
                         child: ListTile(
                           title: Text(
-                            _dx.userList[index].username,
+                            _dx.userList[index].username!,
                             style: const TextStyle(
                                 fontFamily: 'Poppins',
                                 fontWeight: FontWeight.w300),

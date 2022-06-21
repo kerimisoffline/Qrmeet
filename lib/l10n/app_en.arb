@@ -10,7 +10,12 @@
   "user_list": "User List",
   "username_hint": "Username",
   "mail" : "Mail",
-  "password" : "Şifre",
+  "password" : "Password",
+  "re_password" : "Password Again",
   "login_page_btn" : "Log Into",
-  "app_name" : "QrMeet"
+  "app_name" : "QrMeet",
+  "ok" : "Tamam",
+  "click_to_sign" : "click to sign up",
+  "click_to_login" : "click to login",
+  "click_forgot_pass" : "click if forgot password"
 }

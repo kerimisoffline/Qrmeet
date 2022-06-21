@@ -1,4 +1,5 @@
 import 'package:qrmeet/models/hits.dart';
+import 'package:qrmeet/models/user.dart';
 import 'package:qrmeet/services/http_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,10 +9,13 @@ import 'package:qrmeet/ui/recent/recent_page.dart';
 import 'package:qrmeet/ui/scan/scan_page.dart';
 import 'package:qrmeet/utils/get_screensize.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:qrmeet/utils/converter.dart';
 
 class LandingController extends GetxController {
+  dynamic argumentData = Get.arguments;
   final _selectedIndex = 0.obs;
   var scanData = <Hit>[].obs;
+  User mainUser = User();
   final _isLoading = true.obs;
   void changeSelectedIndex(int index) {
     _selectedIndex.value = index;
@@ -21,6 +25,43 @@ class LandingController extends GetxController {
         break;
       case 1:
         break;
+    }
+  }
+
+  void loginIntoSystem(String mail, String pass) async {
+    var generatedPass = generateMd5(pass);
+    debugPrint(mail);
+    debugPrint(generatedPass);
+    try {
+      var sources = await HttpServices.getLoginStatusBase(mail, generatedPass);
+      if (sources != null) {
+        debugPrint("kerimDebug2 $mainUser");
+        mainUser = sources;
+        Get.to(() => LandingPage());
+      } else {
+        debugPrint('null geldi');
+      }
+    } catch (err) {
+      debugPrint('Caught error: $err');
+    }
+  }
+
+  void registerIntoSystem(String mail, String pass) async {
+    var generatedPass = generateMd5(pass);
+    debugPrint(mail);
+    debugPrint(generatedPass);
+    String username = mail.split('@')[0];
+    try {
+      var sources = await HttpServices.registerNewUser(username,mail, generatedPass);
+      if (sources != null) {
+        debugPrint("kerimDebug2 $mainUser");
+        mainUser = sources;
+        Get.to(() => LandingPage());
+      } else {
+        debugPrint('null geldi');
+      }
+    } catch (err) {
+      debugPrint('Caught error: $err');
     }
   }
 
@@ -48,7 +89,7 @@ class LandingController extends GetxController {
 }
 
 class LandingPage extends StatelessWidget {
-  final LandingController landingController = Get.put(LandingController());
+  final LandingController landingController = Get.find();
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   final TextStyle unselectedLabelStyle = TextStyle(
@@ -61,6 +102,8 @@ class LandingPage extends StatelessWidget {
   LandingPage({Key? key}) : super(key: key);
   @override
   Widget build(context) {
+    final _user = landingController.mainUser;
+
     return Scaffold(
         appBar: AppBar(title: Text(AppLocalizations.of(context)!.app_name)),
         body: Obx(() => landingController._isLoading.value
@@ -87,16 +130,21 @@ class LandingPage extends StatelessWidget {
                     const CircleAvatar(
                         backgroundImage: NetworkImage(
                             "http://89.252.153.250:8081/images/avatar1.png"),
-                        backgroundColor: Colors.transparent),
-                    Column(
-                      children: const [
-                        Text(
-                          'Kerim Yıldırım',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        Text('kermmyldrm@gmail.com',
-                            style: TextStyle(color: Colors.white)),
-                      ],
+                        backgroundColor: Color.fromRGBO(0, 0, 0, 0)),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "${_user.username}",
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          Text("${_user.mail}",
+                            style: const TextStyle(color: Colors.white)),
+                        ],
+                      ),
                     ),
                   ],
                 ),

@@ -67,6 +67,39 @@ class HttpServices {
     }
   }
 
+static Future<User?> registerNewUser(String username,String mail, String password) async {
+    User? user;
+    debugPrint("mail $mail pass $password");
+
+    final response = await http.put(
+      Uri.parse(baseUrl + "login"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'mail': mail,
+        'password': password,
+      }),
+    );
+
+    debugPrint("kerimDebug ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      //List<Source>? sources = sourcesJson !=null ? List.from(sourcesJson) : null;
+      debugPrint("res" + response.body);
+      var baseResponse = BaseResponse<User>.fromJson(
+          json.decode(response.body), (data) => User.fromJson(data));
+      user = baseResponse.data;
+      return user;
+    } else {
+      var errorRespone = ErrorResponse.fromJson(json.decode(response.body));
+      debugPrint(errorRespone.message);
+      debugPrint("kerimDebug null geldi ");
+      return null;
+    }
+  }
+
   static Future<List<Hit>?> fetchHitPage() async {
     List<Hit>? hits;
     var url = baseUrl + "hits";
