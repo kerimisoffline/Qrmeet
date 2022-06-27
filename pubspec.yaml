@@ -9,14 +9,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  get:
+  get: ^4.6.5
   cupertino_icons: ^1.0.2
   http: ^0.13.4
   flutter_localizations:
     sdk: flutter  
   intl: ^0.17.0
   crypto: ^3.0.2
-
+  flutter_barcode_scanner: ^2.0.0
+  fluttertoast: ^8.0.9
+  shared_preferences: ^2.0.15
+  qr_flutter: ^4.0.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:qrmeet/models/scanned_qr.dart';
 import 'package:qrmeet/services/base_list_response.dart';
 import 'package:qrmeet/services/error_response.dart';
 import 'package:qrmeet/utils/constants.dart';
@@ -115,6 +116,35 @@ static Future<User?> registerNewUser(String username,String mail, String passwor
     });
       hits = baseListResponse.data;
       return hits;
+    } else {
+      var errorResponse = ErrorResponse.fromJson(json.decode(response.body));
+      debugPrint(errorResponse.message);
+      debugPrint("kerimDebug null geldi ");
+      return null;
+    }
+  }
+
+ static Future<List<ScannedQr>?> fetchRecentPage(String userId) async {
+    List<ScannedQr>? scannedQr;
+    debugPrint("userId $userId");
+
+    final response = await http.post(
+      Uri.parse(baseUrl + "scanned_qrs/" + userId),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
+
+    debugPrint("kerimDebug ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      var baseListResponse =
+        BaseListResponse<ScannedQr>.fromJson(json.decode(response.body), (data) {
+      List<ScannedQr?> hitMap = data.map((e) => ScannedQr.fromJson(e)).toList();
+      return hitMap;
+    });
+      scannedQr = baseListResponse.data;
+      return scannedQr;
     } else {
       var errorResponse = ErrorResponse.fromJson(json.decode(response.body));
       debugPrint(errorResponse.message);

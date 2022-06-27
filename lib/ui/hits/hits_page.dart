@@ -5,8 +5,6 @@ import 'package:qrmeet/ui/landing/landing_page.dart';
 import 'package:qrmeet/utils/get_screensize.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class HitsController extends GetxController {}
-
 class HitsPage extends StatelessWidget {
   final LandingController landingController = Get.find();
   HitsPage({Key? key}) : super(key: key);
@@ -27,7 +25,6 @@ class HitsPage extends StatelessWidget {
 Widget hitSquareCard(BuildContext context, int type) {
   List<Hit>? hitList;
   List<Hit>? filter = [];
-  debugPrint("quare in");
   final LandingController landingController = Get.find();
   hitList = landingController.scanData;
   filter.addAll(hitList);

@@ -1,4 +1,6 @@
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qrmeet/models/hits.dart';
+import 'package:qrmeet/models/scanned_qr.dart';
 import 'package:qrmeet/models/user.dart';
 import 'package:qrmeet/services/http_services.dart';
 import 'package:flutter/material.dart';
@@ -10,11 +12,14 @@ import 'package:qrmeet/ui/scan/scan_page.dart';
 import 'package:qrmeet/utils/get_screensize.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrmeet/utils/converter.dart';
+import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LandingController extends GetxController {
   dynamic argumentData = Get.arguments;
   final _selectedIndex = 0.obs;
   var scanData = <Hit>[].obs;
+  var scannedQrData = <ScannedQr>[].obs;
   User mainUser = User();
   final _isLoading = true.obs;
   void changeSelectedIndex(int index) {
@@ -24,8 +29,25 @@ class LandingController extends GetxController {
         fetchHitPage();
         break;
       case 1:
+        fetchRecentPage();
+        break;
+      case 2:
+        scanBarcode();
         break;
     }
+  }
+
+  Future<void> scanBarcode() async {
+    String barcode = await FlutterBarcodeScanner.scanBarcode(
+        "#ff6666", "Cancel", false, ScanMode.BARCODE);
+    Fluttertoast.showToast(
+        msg: barcode,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0);
   }
 
   void loginIntoSystem(String mail, String pass) async {
@@ -38,6 +60,10 @@ class LandingController extends GetxController {
         debugPrint("kerimDebug2 $mainUser");
         mainUser = sources;
         Get.to(() => LandingPage());
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool("isLogged", true);
+        await prefs.setString("mail", mail);
+        await prefs.setString("password", pass);
       } else {
         debugPrint('null geldi');
       }
@@ -52,7 +78,8 @@ class LandingController extends GetxController {
     debugPrint(generatedPass);
     String username = mail.split('@')[0];
     try {
-      var sources = await HttpServices.registerNewUser(username,mail, generatedPass);
+      var sources =
+          await HttpServices.registerNewUser(username, mail, generatedPass);
       if (sources != null) {
         debugPrint("kerimDebug2 $mainUser");
         mainUser = sources;
@@ -72,6 +99,27 @@ class LandingController extends GetxController {
       if (sources != null) {
         _isLoading.value = false;
         scanData.assignAll(sources);
+      } else {
+        _isLoading.value = false;
+      }
+    } catch (err) {
+      _isLoading.value = false;
+      debugPrint('Caught error: $err');
+    }
+  }
+
+  void fetchRecentPage() async {
+    try {
+      _isLoading.value = true;
+      var sources = await HttpServices.fetchRecentPage(mainUser.id.toString());
+      if (sources != null) {
+        _isLoading.value = false;
+        sources = sources.reversed.toList();
+        scannedQrData.clear();
+        for (var i = 0; i < 9; i++) {
+          if (sources.length <= i) break;
+          scannedQrData.add(sources[i]);
+        }
       } else {
         _isLoading.value = false;
       }
@@ -142,7 +190,7 @@ class LandingPage extends StatelessWidget {
                             style: const TextStyle(color: Colors.white),
                           ),
                           Text("${_user.mail}",
-                            style: const TextStyle(color: Colors.white)),
+                              style: const TextStyle(color: Colors.white)),
                         ],
                       ),
                     ),
