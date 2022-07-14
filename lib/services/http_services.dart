@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:qrmeet/models/scanned_qr.dart';
@@ -68,7 +70,8 @@ class HttpServices {
     }
   }
 
-static Future<User?> registerNewUser(String username,String mail, String password) async {
+  static Future<User?> registerNewUser(
+      String username, String mail, String password) async {
     User? user;
     debugPrint("mail $mail pass $password");
 
@@ -107,13 +110,13 @@ static Future<User?> registerNewUser(String username,String mail, String passwor
     debugPrint("kerim hit page fetching");
     final response = await http.get(Uri.parse(url));
     debugPrint("kerimDebug ${response.statusCode}");
-    
+
     if (response.statusCode == 200) {
       var baseListResponse =
-        BaseListResponse<Hit>.fromJson(json.decode(response.body), (data) {
-      List<Hit?> hitMap = data.map((e) => Hit.fromJson(e)).toList();
-      return hitMap;
-    });
+          BaseListResponse<Hit>.fromJson(json.decode(response.body), (data) {
+        List<Hit?> hitMap = data.map((e) => Hit.fromJson(e)).toList();
+        return hitMap;
+      });
       hits = baseListResponse.data;
       return hits;
     } else {
@@ -124,7 +127,7 @@ static Future<User?> registerNewUser(String username,String mail, String passwor
     }
   }
 
- static Future<List<ScannedQr>?> fetchRecentPage(String userId) async {
+  static Future<List<ScannedQr>?> fetchRecentPage(String userId) async {
     List<ScannedQr>? scannedQr;
     debugPrint("userId $userId");
 
@@ -138,17 +141,50 @@ static Future<User?> registerNewUser(String username,String mail, String passwor
     debugPrint("kerimDebug ${response.statusCode}");
 
     if (response.statusCode == 200) {
-      var baseListResponse =
-        BaseListResponse<ScannedQr>.fromJson(json.decode(response.body), (data) {
-      List<ScannedQr?> hitMap = data.map((e) => ScannedQr.fromJson(e)).toList();
-      return hitMap;
-    });
+      var baseListResponse = BaseListResponse<ScannedQr>.fromJson(
+          json.decode(response.body), (data) {
+        List<ScannedQr?> hitMap =
+            data.map((e) => ScannedQr.fromJson(e)).toList();
+        return hitMap;
+      });
       scannedQr = baseListResponse.data;
       return scannedQr;
     } else {
       var errorResponse = ErrorResponse.fromJson(json.decode(response.body));
       debugPrint(errorResponse.message);
       debugPrint("kerimDebug null geldi ");
+      return null;
+    }
+  }
+
+  static Future<ScannedQr?> postNewScan(
+      String qrLink, String qrTitle, int userId) async {
+    ScannedQr? scannedQr;
+
+    final response = await http.post(
+      Uri.parse(baseUrl + "scanned_qrs"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'qr_link': qrLink,
+        'qr_title': qrTitle,
+        'user_id': userId,
+      }),
+    );
+
+    debugPrint("kerimDebug ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      //List<Source>? sources = sourcesJson !=null ? List.from(sourcesJson) : null;
+      debugPrint("res" + response.body);
+      var baseResponse = BaseResponse<ScannedQr>.fromJson(
+          json.decode(response.body), (data) => ScannedQr.fromJson(data));
+      scannedQr = baseResponse.data;
+      return scannedQr;
+    } else {
+      var errorRespone = ErrorResponse.fromJson(json.decode(response.body));
+      debugPrint(errorRespone.message);
       return null;
     }
   }

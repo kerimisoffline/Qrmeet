@@ -49,17 +49,22 @@ Widget hitSquareCard(BuildContext context, int type) {
                     Image.network(
                       filter[i].image,
                       height: context.dynamicHeight(
-                          (type == 1 || type == 3) ? 0.15 : 0.20),
+                          (type == 1 || type == 3) ? 0.13 : 0.18),
                       width: context
                           .dynamicWidth((type == 1 || type == 3) ? 0.40 : 0.25),
                     ),
                     Text(
                       filter[i].title,
-                      style: const TextStyle(color: Colors.white),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: context.dynamicWidth(0.035)),
                     ),
                     Text(
                       "${filter[i].total} taratma",
-                      style: const TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: context.dynamicWidth(0.035)),
                     ),
                   ],
                 ),

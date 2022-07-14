@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-showAlertDialog(BuildContext context){
-      AlertDialog alert=AlertDialog(
-        content: Row(
-            children: [
-               const CircularProgressIndicator(),
-               Container(margin: const EdgeInsets.only(left: 5),child: const Text("Yükleniyor...")),
-            ],),
-      );
-      showDialog(barrierDismissible: false,
-        context:context,
-        builder:(BuildContext context){
-          return alert;
+showDialog(BuildContext context) {
+  AlertDialog(
+    title: const Text('Hata'),
+    content: const Text('Doğrulama Kodu Giriniz.'),
+    actions: [
+      TextButton(
+        child: Text(AppLocalizations.of(context)!.ok),
+        onPressed: () {
+          Navigator.pop(context);
         },
-      );
-    }
+      )
+    ],
+  );
+}

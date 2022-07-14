@@ -17,5 +17,9 @@
   "ok" : "Tamam",
   "click_to_sign" : "kayıt olmak için tıkla",
   "click_to_login" : "giriş yapmak için tıkla",
-  "click_forgot_pass" : "şifreni unuttuysan tıkla"
+  "click_forgot_pass" : "şifreni unuttuysan tıkla",
+  "enter_title" : "başlık giriniz",
+  "lets_scan_qr" : "tıkla ve qr okut",
+  "today" : "bugün",
+  "yesterday" : "dün"
 }

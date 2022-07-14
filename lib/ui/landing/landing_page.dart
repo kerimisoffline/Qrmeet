@@ -20,8 +20,10 @@ class LandingController extends GetxController {
   final _selectedIndex = 0.obs;
   var scanData = <Hit>[].obs;
   var scannedQrData = <ScannedQr>[].obs;
+  var barcodeMsg = "".obs;
   User mainUser = User();
   final _isLoading = true.obs;
+
   void changeSelectedIndex(int index) {
     _selectedIndex.value = index;
     switch (index) {
@@ -40,14 +42,11 @@ class LandingController extends GetxController {
   Future<void> scanBarcode() async {
     String barcode = await FlutterBarcodeScanner.scanBarcode(
         "#ff6666", "Cancel", false, ScanMode.BARCODE);
-    Fluttertoast.showToast(
-        msg: barcode,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
+    if (barcode == "-1" || barcode.isEmpty) {
+      changeSelectedIndex(0);
+      return;
+    }
+    barcodeMsg.value = barcode;
   }
 
   void loginIntoSystem(String mail, String pass) async {

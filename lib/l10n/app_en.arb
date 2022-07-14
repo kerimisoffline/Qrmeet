@@ -17,5 +17,9 @@
   "ok" : "Tamam",
   "click_to_sign" : "click to sign up",
   "click_to_login" : "click to login",
-  "click_forgot_pass" : "click if forgot password"
+  "click_forgot_pass" : "click if forgot password",
+  "enter_title" : "enter the title",
+  "lets_scan_qr" : "lets scan barcode",
+  "today" : "today",
+  "yesterday" : "yesterday"
 }
