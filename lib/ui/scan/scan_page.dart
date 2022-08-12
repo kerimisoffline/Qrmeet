@@ -37,7 +37,7 @@ class ScanPage extends StatelessWidget {
   final ScanController scanController = Get.put(ScanController());
   @override
   Widget build(context) {
-    return scanField(context);
+    return Scaffold(body: scanField(context));
   }
 }
 

@@ -150,7 +150,7 @@ class LoginPage extends StatelessWidget {
                             Column(
                               children: [
                                 GestureDetector(
-                                  onTap: () => {Get.to(RegisterPage())},
+                                  onTap: () => {Get.to(()=>RegisterPage())},
                                   child: Text(
                                     AppLocalizations.of(context)!.click_to_sign,
                                     style: TextStyle(

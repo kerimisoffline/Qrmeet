@@ -1,4 +1,5 @@
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:qrmeet/main.dart';
 import 'package:qrmeet/models/hits.dart';
 import 'package:qrmeet/models/scanned_qr.dart';
 import 'package:qrmeet/models/user.dart';
@@ -6,6 +7,7 @@ import 'package:qrmeet/services/http_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qrmeet/ui/chat/chat_page.dart';
+import 'package:qrmeet/ui/event/event_page.dart';
 import 'package:qrmeet/ui/hits/hits_page.dart';
 import 'package:qrmeet/ui/recent/recent_page.dart';
 import 'package:qrmeet/ui/scan/scan_page.dart';
@@ -14,6 +16,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrmeet/utils/converter.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:qrmeet/models/chat_model.dart';
 
 class LandingController extends GetxController {
   dynamic argumentData = Get.arguments;
@@ -21,6 +24,7 @@ class LandingController extends GetxController {
   var scanData = <Hit>[].obs;
   var scannedQrData = <ScannedQr>[].obs;
   var barcodeMsg = "".obs;
+  var chatList = <ChatModel>[].obs;
   User mainUser = User();
   final _isLoading = true.obs;
 
@@ -34,8 +38,9 @@ class LandingController extends GetxController {
         fetchRecentPage();
         break;
       case 2:
-        scanBarcode();
         break;
+      case 3:
+        fetchChatList(mainUser.id!);
     }
   }
 
@@ -46,7 +51,25 @@ class LandingController extends GetxController {
       changeSelectedIndex(0);
       return;
     }
+    Get.to(() => ScanPage());
     barcodeMsg.value = barcode;
+  }
+
+  void fetchChatList(int userId) async {
+    try {
+      _isLoading.value = true;
+      var sources = await HttpServices.fetchChatList(userId.toString());
+      if (sources != null) {
+        _isLoading.value = false;
+        chatList.clear();
+        chatList.value = sources;
+      } else {
+        _isLoading.value = false;
+      }
+    } catch (err) {
+      _isLoading.value = false;
+      debugPrint('Caught error: $err');
+    }
   }
 
   void loginIntoSystem(String mail, String pass) async {
@@ -152,13 +175,26 @@ class LandingPage extends StatelessWidget {
     final _user = landingController.mainUser;
 
     return Scaffold(
-        appBar: AppBar(title: Text(AppLocalizations.of(context)!.app_name)),
+        appBar: AppBar(
+          title: Text(AppLocalizations.of(context)!.app_name),
+          actions: [
+            GestureDetector(
+              onTap: () {
+                landingController.scanBarcode();
+              },
+              child: const Padding(
+                padding: EdgeInsets.only(right: 12),
+                child: Icon(Icons.qr_code_sharp),
+              ),
+            )
+          ],
+        ),
         body: Obx(() => landingController._isLoading.value
             ? const Align(
                 alignment: Alignment.center, child: CircularProgressIndicator())
             : IndexedStack(
                 index: landingController._selectedIndex.value,
-                children: [HitsPage(), RecentPage(), ScanPage(), ChatPage()],
+                children: [HitsPage(), RecentPage(), EventPage(), ChatPage()],
               )),
         drawer: Drawer(
           shape: const RoundedRectangleBorder(
@@ -231,8 +267,8 @@ class LandingPage extends StatelessWidget {
                   label: 'Recent',
                   backgroundColor: Colors.blue),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.qr_code_scanner),
-                  label: 'Scan',
+                  icon: Icon(Icons.festival),
+                  label: 'Events',
                   backgroundColor: Colors.blue),
               BottomNavigationBarItem(
                   icon: Icon(Icons.chat),

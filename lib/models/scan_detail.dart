@@ -1,9 +1,10 @@
 class ScanDetail {
   int id;
-  int username;
-  int mail;
-  String status;
+  String username;
+  String mail;
+  int status;
   DateTime? scannedDate;
+  DateTime? lastOnline;
   String userPic;
   ScanDetail({
     required this.id,
@@ -11,16 +12,18 @@ class ScanDetail {
     required this.mail,
     required this.status,
     required this.scannedDate,
+    required this.lastOnline,
     required this.userPic,
   });
 
   factory ScanDetail.fromJson(Map<String, dynamic> json) {
     return ScanDetail(
       id: json["id"],
-      username: json["qr_id"],
-      mail: json["user_id"],
-      status: json["qr_title"],
+      username: json["username"],
+      mail: json["mail"],
+      status: json["status"],
       scannedDate: DateTime.tryParse(json["scanned_date"]),
+      lastOnline: DateTime.tryParse(json["last_online"]),
       userPic: json["user_pic"],
     );
   }

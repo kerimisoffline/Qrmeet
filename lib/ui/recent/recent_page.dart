@@ -93,7 +93,7 @@ Widget recentCard(BuildContext context, ScannedQr scannedQr) {
       ],
     ),
     onTap: () {
-      Get.to(ScanDetailPage(), arguments: [
+      Get.to(() => ScanDetailPage(), arguments: [
         {"qrId": scannedQr.qrId},
         {"qrTitle": scannedQr.qrTitle}
       ]);

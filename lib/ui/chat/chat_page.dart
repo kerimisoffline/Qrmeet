@@ -1,59 +1,105 @@
-import 'dart:math';
-import 'package:qrmeet/services/http_services.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:qrmeet/main.dart';
-import 'package:qrmeet/utils/converter.dart';
+import 'package:qrmeet/models/chat_model.dart';
+import 'package:qrmeet/services/http_services.dart';
+import 'package:qrmeet/models/user.dart';
+import 'package:qrmeet/ui/chat/chat_channel.dart';
 import 'package:qrmeet/utils/get_screensize.dart';
+import 'package:qrmeet/ui/landing/landing_page.dart';
+import 'package:scoped_model/scoped_model.dart';
+import 'package:socket_io_client/socket_io_client.dart';
+import 'package:qrmeet/utils/converter.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ChatPage extends StatelessWidget {
-  final TextEditingController scanTitleController = TextEditingController();
+  final LandingController _landingController = Get.find();
 
   ChatPage({Key? key}) : super(key: key);
   @override
-  Widget build(context) {
-    return AlertDialog(
-      title: const Center(
-        child: Text(
-          'www.facebook.com\nreckols',
-          style: TextStyle(color: Colors.white),
-        ),
-      ),
-      backgroundColor: Colors.blue,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
-      content: Container(
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            color: Colors.white),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: TextField(
-            enableSuggestions: false,
-            autocorrect: false,
-            style: const TextStyle(color: Colors.black),
-            controller: scanTitleController,
-            decoration: InputDecoration(
-              hintStyle: const TextStyle(color: Colors.grey),
-              enabledBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              hintText: AppLocalizations.of(context)!.enter_title,
+  Widget build(BuildContext context) {
+    return Obx(() => InkWell(
+        child: chatPageView(context, _landingController.chatList,
+            _landingController.mainUser)));
+  }
+}
+
+Widget chatPageView(
+    BuildContext context, List<ChatModel> chatList, User mainUser) {
+  return ListView.builder(
+      itemCount: chatList.length,
+      itemBuilder: ((BuildContext context, int index) =>
+          chatPageItem(context, chatList[index], mainUser)));
+}
+
+Widget chatPageItem(BuildContext context, ChatModel chatUser, User mainUser) {
+  return InkWell(
+    onTap: () => {
+      Get.to(() => ChatChannel(), arguments: [
+        {"channelChatId": chatUser.chatID},
+        {"mainUserId": mainUser.id.toString()},
+        {"friendUserId": chatUser.id.toString()}
+      ])
+    },
+    child: Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: context.dynamicWidth(0.03),
+          vertical: context.dynamicHeight(0.001)),
+      child: Row(
+        children: [
+          CircleAvatar(
+              backgroundImage: NetworkImage(chatUser.userpic!),
+              backgroundColor: const Color.fromRGBO(0, 0, 0, 0)),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  chatUser.username!,
+                  style: TextStyle(
+                      color: chatUser.isSeen == 1 ? Colors.grey : Colors.black,
+                      fontSize: context.dynamicWidth(0.05),
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.normal),
+                ),
+                Row(
+                  children: <Widget>[
+                    Text(DateFormat.Hm().format(chatUser.sentAt!.toLocal()),
+                        style: TextStyle(
+                            color: chatUser.isSeen == 1
+                                ? Colors.grey
+                                : Colors.black,
+                            fontSize: context.dynamicWidth(0.04),
+                            fontFamily: 'Poppins',
+                            fontWeight: FontWeight.normal)),
+                    Padding(
+                      padding: EdgeInsets.symmetric(
+                          horizontal: context.dynamicWidth(0.05)),
+                      child: SizedBox(
+                        width: context.dynamicWidth(0.5),
+                        child: Text(chatUser.message,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                            style: TextStyle(
+                                color: chatUser.isSeen == 1
+                                    ? Colors.grey
+                                    : Colors.black,
+                                fontSize: context.dynamicWidth(0.04),
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.normal)),
+                      ),
+                    ),
+                  ],
+                )
+              ],
             ),
           ),
-        ),
+        ],
       ),
-      actions: [
-        TextButton(
-          child: Text(
-            AppLocalizations.of(context)!.ok,
-            style: const TextStyle(color: Colors.white),
-          ),
-          onPressed: () {
-            debugPrint(scanTitleController.text);
-          },
-        )
-      ],
-    );
-  }
+    ),
+  );
 }

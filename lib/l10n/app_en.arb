@@ -21,5 +21,9 @@
   "enter_title" : "enter the title",
   "lets_scan_qr" : "lets scan barcode",
   "today" : "today",
-  "yesterday" : "yesterday"
+  "yesterday" : "yesterday",
+  "hit" : "Hit",
+  "recent" : "Recent",
+  "events" : "Events",
+  "chats" : "Chats"
 }

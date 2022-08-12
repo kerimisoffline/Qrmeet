@@ -21,5 +21,9 @@
   "enter_title" : "başlık giriniz",
   "lets_scan_qr" : "tıkla ve qr okut",
   "today" : "bugün",
-  "yesterday" : "dün"
+  "yesterday" : "dün",
+  "hit" : "Hit",
+  "recent" : "Son Okutulan",
+  "events" : "Etkinlik",
+  "chats" : "Mesaj"
 }
