@@ -35,12 +35,25 @@ Widget chatPageView(
 }
 
 Widget chatPageItem(BuildContext context, ChatModel chatUser, User mainUser) {
+  bool isTickVisible = chatUser.senderID == mainUser.id.toString() ? true : false;
   return InkWell(
     onTap: () => {
+      
       Get.to(() => ChatChannel(), arguments: [
         {"channelChatId": chatUser.chatID},
         {"mainUserId": mainUser.id.toString()},
-        {"friendUserId": chatUser.id.toString()}
+        {"friendUserId": chatUser.id.toString()},
+        {"friendUserPic": chatUser.userpic.toString()},
+        {"friendUserName": chatUser.username.toString()},
+        {"friendUserLastSeen": 
+        chatUser.lastOnline!.toLocal().isToday()
+                      ? AppLocalizations.of(context)!.today
+                      : chatUser.lastOnline!.toLocal().isYesterday()
+                          ? AppLocalizations.of(context)!.yesterday
+                          : DateFormat("d MMMM",
+                                  Localizations.localeOf(context).toString())
+                              .format(chatUser.lastOnline!.toLocal()).toString() + " " +
+        DateFormat.Hm().format(chatUser.lastOnline!.toLocal()).toString()}
       ])
     },
     child: Padding(
@@ -61,21 +74,24 @@ Widget chatPageItem(BuildContext context, ChatModel chatUser, User mainUser) {
                 Text(
                   chatUser.username!,
                   style: TextStyle(
-                      color: chatUser.isSeen == 1 ? Colors.grey : Colors.black,
+                      color: Colors.black,
                       fontSize: context.dynamicWidth(0.05),
                       fontFamily: 'Poppins',
                       fontWeight: FontWeight.normal),
                 ),
                 Row(
                   children: <Widget>[
-                    Text(DateFormat.Hm().format(chatUser.sentAt!.toLocal()),
-                        style: TextStyle(
-                            color: chatUser.isSeen == 1
-                                ? Colors.grey
-                                : Colors.black,
-                            fontSize: context.dynamicWidth(0.04),
-                            fontFamily: 'Poppins',
-                            fontWeight: FontWeight.normal)),
+                    SizedBox(
+                      width: context.dynamicWidth(0.12),
+                      child: Text(DateFormat.Hm().format(chatUser.sentAt!.toLocal()),
+                          style: TextStyle(
+                              color: (chatUser.isSeen == 1 || chatUser.senderID == mainUser.id.toString())
+                                  ? Colors.grey
+                                  : Colors.black,
+                              fontSize: context.dynamicWidth(0.04),
+                              fontFamily: 'Poppins',
+                              fontWeight: FontWeight.normal)),
+                    ),
                     Padding(
                       padding: EdgeInsets.symmetric(
                           horizontal: context.dynamicWidth(0.05)),
@@ -85,7 +101,7 @@ Widget chatPageItem(BuildContext context, ChatModel chatUser, User mainUser) {
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                             style: TextStyle(
-                                color: chatUser.isSeen == 1
+                                color: (chatUser.isSeen == 1 || chatUser.senderID == mainUser.id.toString())
                                     ? Colors.grey
                                     : Colors.black,
                                 fontSize: context.dynamicWidth(0.04),
@@ -93,6 +109,12 @@ Widget chatPageItem(BuildContext context, ChatModel chatUser, User mainUser) {
                                 fontWeight: FontWeight.normal)),
                       ),
                     ),
+                    Visibility(
+                      visible: isTickVisible,
+                      child: SizedBox(
+                        width: context.dynamicWidth(0.05),
+                        child: IconButton(onPressed: null, icon: Icon(chatUser.isSeen == 0 ? Icons.done : Icons.done_all))),
+                    )
                   ],
                 )
               ],

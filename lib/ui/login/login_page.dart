@@ -21,8 +21,9 @@ class LoginController extends GetxController {
     final bool? loggedStatus = prefs.getBool("isLogged");
     final String? mail = prefs.getString("mail");
     final String? pass = prefs.getString("password");
+    final String? id = prefs.getString("userId");
 
-    if (loggedStatus == true && mail != null && pass != null) {
+    if (loggedStatus == true && mail != null && pass != null && id!=null) {
       final LandingController _landingController = Get.find();
       _landingController.loginIntoSystem(mail, pass);
     } else {
@@ -150,7 +151,7 @@ class LoginPage extends StatelessWidget {
                             Column(
                               children: [
                                 GestureDetector(
-                                  onTap: () => {Get.to(()=>RegisterPage())},
+                                  onTap: () => {Get.to(() => RegisterPage())},
                                   child: Text(
                                     AppLocalizations.of(context)!.click_to_sign,
                                     style: TextStyle(

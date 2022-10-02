@@ -1,5 +1,4 @@
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:qrmeet/main.dart';
 import 'package:qrmeet/models/hits.dart';
 import 'package:qrmeet/models/scanned_qr.dart';
 import 'package:qrmeet/models/user.dart';
@@ -10,7 +9,6 @@ import 'package:qrmeet/ui/chat/chat_page.dart';
 import 'package:qrmeet/ui/event/event_page.dart';
 import 'package:qrmeet/ui/hits/hits_page.dart';
 import 'package:qrmeet/ui/recent/recent_page.dart';
-import 'package:qrmeet/ui/scan/scan_page.dart';
 import 'package:qrmeet/utils/get_screensize.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrmeet/utils/converter.dart';
@@ -44,15 +42,40 @@ class LandingController extends GetxController {
     }
   }
 
-  Future<void> scanBarcode() async {
+  Future<void> scanBarcode(BuildContext context) async {
     String barcode = await FlutterBarcodeScanner.scanBarcode(
         "#ff6666", "Cancel", false, ScanMode.BARCODE);
     if (barcode == "-1" || barcode.isEmpty) {
       changeSelectedIndex(0);
       return;
     }
-    Get.to(() => ScanPage());
+    debugPrint("barcot okutuldu" + barcode);
     barcodeMsg.value = barcode;
+    _showDialog(context, barcodeMsg.value);
+  }
+
+  void postNewScan(String qrLink, String qrTitle, int userId) async {
+    debugPrint(qrLink);
+    debugPrint(qrTitle);
+    debugPrint("$userId");
+    try {
+      var sources = await HttpServices.postNewScan(qrLink, qrTitle, userId);
+      if (sources != null) {
+        Fluttertoast.showToast(
+            msg: sources.qrTitle + " başarıyla okutuldu",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.blue,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        Get.find<LandingController>().changeSelectedIndex(1);
+      } else {
+        debugPrint('null geldi');
+      }
+    } catch (err) {
+      debugPrint('Caught error: $err');
+    }
   }
 
   void fetchChatList(int userId) async {
@@ -62,6 +85,15 @@ class LandingController extends GetxController {
       if (sources != null) {
         _isLoading.value = false;
         chatList.clear();
+        ChatModel? removedChatModel;
+        for (ChatModel chatUser in sources) {
+          if (chatUser.id == mainUser.id) {
+            removedChatModel = chatUser;
+          }
+        }
+        if (removedChatModel != null) {
+          sources.remove(removedChatModel);
+        }
         chatList.value = sources;
       } else {
         _isLoading.value = false;
@@ -154,7 +186,9 @@ class LandingController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    changeSelectedIndex(0);
+    if (_selectedIndex == 0.obs) {
+      changeSelectedIndex(0);
+    }
   }
 }
 
@@ -180,7 +214,7 @@ class LandingPage extends StatelessWidget {
           actions: [
             GestureDetector(
               onTap: () {
-                landingController.scanBarcode();
+                landingController.scanBarcode(context);
               },
               child: const Padding(
                 padding: EdgeInsets.only(right: 12),
@@ -210,10 +244,10 @@ class LandingPage extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const CircleAvatar(
+                     CircleAvatar(
                         backgroundImage: NetworkImage(
-                            "http://89.252.153.250:8081/images/avatar1.png"),
-                        backgroundColor: Color.fromRGBO(0, 0, 0, 0)),
+                            _user.userPic!),
+                        backgroundColor: const Color.fromRGBO(0, 0, 0, 0)),
                     Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Column(
@@ -257,22 +291,22 @@ class LandingPage extends StatelessWidget {
             showSelectedLabels: true,
             selectedLabelStyle: selectedLabelStyle,
             unselectedLabelStyle: unselectedLabelStyle,
-            items: const <BottomNavigationBarItem>[
+            items: <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                  icon: Icon(Icons.flash_on),
-                  label: 'Hit',
+                  icon: const Icon(Icons.flash_on),
+                  label: AppLocalizations.of(context)!.hit,
                   backgroundColor: Colors.blue),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.view_day),
-                  label: 'Recent',
+                  icon: const Icon(Icons.view_day),
+                  label: AppLocalizations.of(context)!.recent,
                   backgroundColor: Colors.blue),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.festival),
-                  label: 'Events',
+                  icon: const Icon(Icons.festival),
+                  label: AppLocalizations.of(context)!.events,
                   backgroundColor: Colors.blue),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.chat),
-                  label: 'Chats',
+                  icon: const Icon(Icons.chat),
+                  label: AppLocalizations.of(context)!.chats,
                   backgroundColor: Colors.blue),
             ],
             currentIndex: landingController._selectedIndex.value,
@@ -282,4 +316,72 @@ class LandingPage extends StatelessWidget {
           ),
         ));
   }
+}
+
+void _showDialog(BuildContext context, String barcodeUrl) {
+  final TextEditingController scanTitleController = TextEditingController();
+  final LandingController landingController = Get.find();
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Center(
+            child: Text(
+              barcodeUrl,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+          backgroundColor: Colors.blue,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+          content: Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            decoration: const BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(20)),
+                color: Colors.white),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                enableSuggestions: false,
+                autocorrect: false,
+                style: const TextStyle(color: Colors.black),
+                controller: scanTitleController,
+                decoration: InputDecoration(
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  hintText: AppLocalizations.of(context)!.enter_title,
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: Text(AppLocalizations.of(context)!.ok,
+                  style: const TextStyle(color: Colors.white)),
+              onPressed: () {
+                String barcodeMsg = landingController.barcodeMsg.value;
+                if (scanTitleController.text.toString().isNotEmpty &&
+                    barcodeMsg.isNotEmpty) {
+                  landingController.barcodeMsg.value = "-1";
+                  landingController.postNewScan(
+                      barcodeMsg,
+                      scanTitleController.text.toString(),
+                      landingController.mainUser.id!);
+                  Get.back();
+                } else {
+                  Fluttertoast.showToast(
+                      msg: AppLocalizations.of(context)!.enter_title,
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.CENTER,
+                      timeInSecForIosWeb: 1,
+                      backgroundColor: Colors.white,
+                      textColor: Colors.black,
+                      fontSize: context.dynamicWidth(0.05));
+                }
+              },
+            )
+          ],
+        );
+      });
 }

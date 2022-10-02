@@ -25,5 +25,6 @@
   "hit" : "Hit",
   "recent" : "Son Okutulan",
   "events" : "Etkinlik",
-  "chats" : "Mesaj"
+  "chats" : "Mesaj",
+  "type_message" : "Bir şeyler yaz."
 }

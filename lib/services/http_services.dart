@@ -279,6 +279,23 @@ class HttpServices {
     }
   }
 
+  static Future<List<Message>?> fetchMessageSeenStatus(String chatId, String receiverID) async {
+    debugPrint("chat_id $chatId");
+    debugPrint("receiver_id $chatId");
+    final response = await http.post(
+      Uri.parse(baseUrl + "update_chat"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'receiver_id': receiverID,
+        'chat_id': chatId,
+      }),
+    );
+    debugPrint("kerimDebug updateSeenResponse ${response.statusCode}");
+    return null;
+  }
+
   static Future<Message?> postNewMessage(Message message) async {
     Message? _message;
 

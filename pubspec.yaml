@@ -33,12 +33,6 @@ flutter:
   generate: true
   assets:
         - assets/backgroundImages/
-        - assets/btnImages/
-        - assets/elementImages/
-        - assets/enviromentImages/
-        - assets/itemImages/
-        - assets/structureImages/
-        - assets/unitImages/
   fonts:
     - family: Poppins
       fonts:

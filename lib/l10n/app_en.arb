@@ -25,5 +25,6 @@
   "hit" : "Hit",
   "recent" : "Recent",
   "events" : "Events",
-  "chats" : "Chats"
+  "chats" : "Chats",
+  "type_message" : "Type something."
 }

@@ -1,14 +1,9 @@
-import 'dart:ffi';
-import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:qrmeet/models/scanned_qr.dart';
-import 'package:qrmeet/services/http_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qrmeet/main.dart';
 import 'package:qrmeet/ui/landing/landing_page.dart';
 import 'package:qrmeet/ui/scan/scan_detail_page.dart';
-import 'package:qrmeet/ui/scan/scan_page.dart';
 import 'package:qrmeet/utils/converter.dart';
 import 'package:qrmeet/utils/get_screensize.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
