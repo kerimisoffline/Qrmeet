@@ -14,6 +14,8 @@ import 'package:qrmeet/utils/get_screensize.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
+import '../chat/chat_channel.dart';
+
 class ScanDetailPageController extends GetxController {
   dynamic argumentData = Get.arguments;
   var qrTitle = "".obs;
@@ -30,6 +32,34 @@ class ScanDetailPageController extends GetxController {
         scannedUserList.clear();
         scannedUserList.value = sources;
       } else {
+        _isLoading.value = false;
+      }
+    } catch (err) {
+      _isLoading.value = false;
+      debugPrint('Caught error: $err');
+    }
+  }
+
+  void checkChannelId(ScanDetail scannedUser,int? myUserId,String dateStr) async {
+    try {
+      debugPrint('$myUserId');
+      debugPrint('${scannedUser.id}');
+
+      if(myUserId==null) return;
+      _isLoading.value = true;
+      var selectedChatId = await HttpServices.checkChanneId(scannedUser.id,myUserId);
+      if (selectedChatId != null) {
+        _isLoading.value = false;
+        Get.to(() => ChatChannel(), arguments: [
+        {"channelChatId": selectedChatId.chatId.toString()},
+        {"mainUserId": myUserId.toString()},
+        {"friendUserId": scannedUser.id.toString()},
+        {"friendUserPic": scannedUser.userPic.toString()},
+        {"friendUserName": scannedUser.username.toString()},
+        {"friendUserLastSeen": dateStr}
+        ]);
+      } else {
+      debugPrint('Caught error: id null geldi');
         _isLoading.value = false;
       }
     } catch (err) {
@@ -95,47 +125,63 @@ Widget scanDetailList(BuildContext context, List<ScanDetail> scannedUserList) {
 }
 
 Widget scanDetailItem(BuildContext context, ScanDetail scannedUser) {
-  return Padding(
-    padding: EdgeInsets.symmetric(
-        horizontal: context.dynamicWidth(0.03),
-        vertical: context.dynamicHeight(0.001)),
-    child: Row(
-      children: [
-        CircleAvatar(
-            backgroundImage: NetworkImage(scannedUser.userPic),
-            backgroundColor: const Color.fromRGBO(0, 0, 0, 0)),
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                scannedUser.username,
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: context.dynamicWidth(0.05),
-                    fontFamily: 'Poppins',
-                    fontWeight: FontWeight.w500),
-              ),
-              Text(
-                  scannedUser.scannedDate!.isToday()
+  final LandingController _landingController = Get.find();
+  final ScanDetailPageController _scanDetailPageController = Get.find();
+
+  return InkWell(
+    child: Padding(
+      padding: EdgeInsets.symmetric(
+          horizontal: context.dynamicWidth(0.03),
+          vertical: context.dynamicHeight(0.001)),
+      child: Row(
+        children: [
+          CircleAvatar(
+              backgroundImage: NetworkImage(scannedUser.userPic),
+              backgroundColor: const Color.fromRGBO(0, 0, 0, 0)),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  scannedUser.username,
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: context.dynamicWidth(0.05),
+                      fontFamily: 'Poppins',
+                      fontWeight: FontWeight.w500),
+                ),
+                Text(
+                    scannedUser.scannedDate!.isToday()
+                        ? AppLocalizations.of(context)!.today
+                        : scannedUser.scannedDate!.isYesterday()
+                            ? AppLocalizations.of(context)!.yesterday
+                            : DateFormat("d MMMM",
+                                    Localizations.localeOf(context).toString())
+                                .format(scannedUser.scannedDate!),
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: context.dynamicWidth(0.04),
+                        fontFamily: 'Poppins',
+                        fontWeight: FontWeight.normal)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+    onTap: () => {
+      _scanDetailPageController.checkChannelId(scannedUser,_landingController.mainUser.id,
+      scannedUser.lastOnline!.toLocal().isToday()
                       ? AppLocalizations.of(context)!.today
-                      : scannedUser.scannedDate!.isYesterday()
+                      : scannedUser.lastOnline!.toLocal().isYesterday()
                           ? AppLocalizations.of(context)!.yesterday
                           : DateFormat("d MMMM",
                                   Localizations.localeOf(context).toString())
-                              .format(scannedUser.scannedDate!),
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: context.dynamicWidth(0.04),
-                      fontFamily: 'Poppins',
-                      fontWeight: FontWeight.normal)),
-            ],
-          ),
-        ),
-      ],
-    ),
+                              .format(scannedUser.lastOnline!.toLocal()).toString() + " " +
+        DateFormat.Hm().format(scannedUser.lastOnline!.toLocal()).toString())
+    }
   );
 }
 

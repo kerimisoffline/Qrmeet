@@ -26,5 +26,6 @@
   "recent" : "Son Okutulan",
   "events" : "Etkinlik",
   "chats" : "Mesaj",
-  "type_message" : "Bir şeyler yaz."
+  "type_message" : "Bir şeyler yaz.",
+  "events_coming_soon" : "Etkinlikler Çok Yakında!"
 }

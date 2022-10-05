@@ -26,5 +26,6 @@
   "recent" : "Recent",
   "events" : "Events",
   "chats" : "Chats",
-  "type_message" : "Type something."
+  "type_message" : "Type something.",
+  "events_coming_soon" : "Events Coming Soon!"
 }

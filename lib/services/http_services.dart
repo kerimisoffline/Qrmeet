@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:qrmeet/models/chat_model.dart';
 import 'package:qrmeet/models/message.dart';
+import 'package:qrmeet/models/new_chat_model.dart';
 import 'package:qrmeet/models/scan_detail.dart';
 import 'package:qrmeet/models/scanned_qr.dart';
 import 'package:qrmeet/services/base_list_response.dart';
@@ -296,6 +297,7 @@ class HttpServices {
     return null;
   }
 
+
   static Future<Message?> postNewMessage(Message message) async {
     Message? _message;
 
@@ -321,6 +323,35 @@ class HttpServices {
           json.decode(response.body), (data) => Message.fromJson(data));
       _message = baseResponse.data;
       return _message;
+    } else {
+      var errorRespone = ErrorResponse.fromJson(json.decode(response.body));
+      debugPrint(errorRespone.message);
+      return null;
+    }
+  }
+
+  static Future<NewChatId?> checkChanneId(int friendUserId, int myUserId) async {
+    NewChatId? selectedChatId;
+
+    final response = await http.post(
+      Uri.parse(baseUrl + "message_from_detail"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        'user_id': myUserId,
+        'friend_id': friendUserId,
+      }),
+    );
+
+    debugPrint("kerimDebug ${response.statusCode}");
+
+    if (response.statusCode == 200) {
+      debugPrint("res" + response.body);
+      var baseResponse = BaseResponse<NewChatId>.fromJson(
+          json.decode(response.body), (data) => NewChatId.fromJson(data));
+      selectedChatId = baseResponse.data;
+      return selectedChatId;
     } else {
       var errorRespone = ErrorResponse.fromJson(json.decode(response.body));
       debugPrint(errorRespone.message);
