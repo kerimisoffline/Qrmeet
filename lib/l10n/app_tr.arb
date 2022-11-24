@@ -27,5 +27,12 @@
   "events" : "Etkinlik",
   "chats" : "Mesaj",
   "type_message" : "Bir şeyler yaz.",
-  "events_coming_soon" : "Etkinlikler Çok Yakında!"
+  "events_coming_soon" : "Etkinlikler Çok Yakında!",
+  "profile" : "Profil",
+  "settings" : "Ayarlar",
+  "quit": "Çıkış Yap",
+  "update_info" : "Bilgileri Güncelle",
+  "share_profile" : "Profili Paylaş",
+  "notification" : "Bildirimler",
+  "change_pass": "Şifre Değiştir"
 }

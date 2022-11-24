@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
   var _passwordVisible = false.obs;
-  var _isLoading = true.obs;
+  var isLoading = true.obs;
 
   void changeVisibility() {
     _passwordVisible.value = !_passwordVisible.value;
@@ -26,8 +26,9 @@ class LoginController extends GetxController {
     if (loggedStatus == true && mail != null && pass != null && id!=null) {
       final LandingController _landingController = Get.find();
       _landingController.loginIntoSystem(mail, pass);
+      
     } else {
-      _isLoading.value = false;
+      isLoading.value = false;
     }
   }
 
@@ -179,7 +180,7 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                loginController._isLoading.value
+                loginController.isLoading.value
                     ? Container(
                         width: context.dynamicWidth(1),
                         height: context.dynamicHeight(1),

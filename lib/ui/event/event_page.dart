@@ -6,8 +6,7 @@ class EventPage extends StatelessWidget {
   const EventPage({Key? key}) : super(key: key);
   @override
   Widget build(context) {
-    return Expanded(
-        child: Column(
+    return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -26,7 +25,6 @@ class EventPage extends StatelessWidget {
               child: Center(child: Image.asset('assets/backgroundImages/ic_no_event.png'))
             )
           ],
-        ),
-      );
+        );
   }
 }

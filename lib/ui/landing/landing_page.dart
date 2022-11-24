@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:qrmeet/models/hits.dart';
 import 'package:qrmeet/models/scanned_qr.dart';
@@ -8,7 +10,10 @@ import 'package:get/get.dart';
 import 'package:qrmeet/ui/chat/chat_page.dart';
 import 'package:qrmeet/ui/event/event_page.dart';
 import 'package:qrmeet/ui/hits/hits_page.dart';
+import 'package:qrmeet/ui/login/login_page.dart';
+import 'package:qrmeet/ui/profile/profile.dart';
 import 'package:qrmeet/ui/recent/recent_page.dart';
+import 'package:qrmeet/ui/settings/settings.dart';
 import 'package:qrmeet/utils/get_screensize.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:qrmeet/utils/converter.dart';
@@ -114,6 +119,7 @@ class LandingController extends GetxController {
         debugPrint("kerimDebug2 $mainUser");
         mainUser = sources;
         Get.to(() => LandingPage());
+        changeSelectedIndex(0);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setBool("isLogged", true);
         await prefs.setString("mail", mail);
@@ -124,6 +130,16 @@ class LandingController extends GetxController {
     } catch (err) {
       debugPrint('Caught error: $err');
     }
+  }
+
+  void clearAndReturnLogin() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setBool("isLogged", false);
+        await prefs.setString("mail", "");
+        await prefs.setString("password", "");  
+        final LoginController loginController = Get.find();
+        loginController.isLoading.value = false;
+        Get.to(()=>LoginPage());  
   }
 
   void registerIntoSystem(String mail, String pass) async {
@@ -208,113 +224,138 @@ class LandingPage extends StatelessWidget {
   Widget build(context) {
     final _user = landingController.mainUser;
 
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.app_name),
-          actions: [
-            GestureDetector(
-              onTap: () {
-                landingController.scanBarcode(context);
-              },
-              child: const Padding(
-                padding: EdgeInsets.only(right: 12),
-                child: Icon(Icons.qr_code_sharp),
-              ),
-            )
-          ],
-        ),
-        body: Obx(() => landingController._isLoading.value
-            ? const Align(
-                alignment: Alignment.center, child: CircularProgressIndicator())
-            : IndexedStack(
-                index: landingController._selectedIndex.value,
-                children: [HitsPage(), RecentPage(), EventPage(), ChatPage()],
-              )),
-        drawer: Drawer(
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                  bottomRight: Radius.circular(30),
-                  topRight: Radius.circular(20))),
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: [
-              DrawerHeader(
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text(AppLocalizations.of(context)!.app_name),
+            actions: [
+              GestureDetector(
+                onTap: () {
+                  landingController.scanBarcode(context);
+                },
+                child: const Padding(
+                  padding: EdgeInsets.only(right: 12),
+                  child: Icon(Icons.qr_code_sharp),
                 ),
-                child: Row(
-                  children: [
-                     CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            _user.userPic!),
-                        backgroundColor: const Color.fromRGBO(0, 0, 0, 0)),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "${_user.username}",
-                            style: const TextStyle(color: Colors.white),
+              )
+            ],
+          ),
+          body: Obx(() => landingController._isLoading.value
+              ? const Align(
+                  alignment: Alignment.center, child: CircularProgressIndicator())
+              : IndexedStack(
+                  index: landingController._selectedIndex.value,
+                  children: [HitsPage(), RecentPage(), EventPage(), ChatPage()],
+                )),
+          drawer: Drawer(
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    bottomRight: Radius.circular(30),
+                    topRight: Radius.circular(20))),
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: [
+                      DrawerHeader(
+                        decoration: const BoxDecoration(
+                          color: Colors.blue,
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(() => ProfileView());
+                          },
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                  backgroundImage: NetworkImage(_user.userPic!),
+                                  backgroundColor: const Color.fromRGBO(0, 0, 0, 0)),
+                              Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "${_user.username}",
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                    Text("${_user.mail}",
+                                        style: const TextStyle(color: Colors.white)),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          Text("${_user.mail}",
-                              style: const TextStyle(color: Colors.white)),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
+                      ListTile(
+                        leading: const Icon(Icons.person),
+                        title: Text(AppLocalizations.of(context)!.profile),
+                        onTap: () {
+                          Get.to(() => ProfileView());
+                          //Get.back();
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.settings),
+                        title: Text(AppLocalizations.of(context)!.settings),
+                        onTap: () {
+                          Get.to(() => SettingsView());
+                          //Get.back();
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              ListTile(
-                title: const Text('Hits'),
-                onTap: () {
-                  landingController.changeSelectedIndex(0);
-                  Get.back();
-                },
-              ),
-              ListTile(
-                title: const Text('Recent'),
-                onTap: () {
-                  landingController.changeSelectedIndex(1);
-                  Get.back();
-                },
-              ),
-            ],
+                const Spacer(),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.exit_to_app),
+                  title: Text(AppLocalizations.of(context)!.quit),
+                  onTap: () {
+                    landingController.clearAndReturnLogin();
+                    //Get.back();
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
-        drawerEdgeDragWidth: context.dynamicWidth(0.2),
-        bottomNavigationBar: Obx(
-          () => BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            showUnselectedLabels: true,
-            showSelectedLabels: true,
-            selectedLabelStyle: selectedLabelStyle,
-            unselectedLabelStyle: unselectedLabelStyle,
-            items: <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                  icon: const Icon(Icons.flash_on),
-                  label: AppLocalizations.of(context)!.hit,
-                  backgroundColor: Colors.blue),
-              BottomNavigationBarItem(
-                  icon: const Icon(Icons.view_day),
-                  label: AppLocalizations.of(context)!.recent,
-                  backgroundColor: Colors.blue),
-              BottomNavigationBarItem(
-                  icon: const Icon(Icons.festival),
-                  label: AppLocalizations.of(context)!.events,
-                  backgroundColor: Colors.blue),
-              BottomNavigationBarItem(
-                  icon: const Icon(Icons.chat),
-                  label: AppLocalizations.of(context)!.chats,
-                  backgroundColor: Colors.blue),
-            ],
-            currentIndex: landingController._selectedIndex.value,
-            selectedItemColor: Colors.blue[800],
-            onTap: landingController.changeSelectedIndex,
-            unselectedItemColor: Colors.grey,
-          ),
-        ));
+          drawerEdgeDragWidth: context.dynamicWidth(0.2),
+          bottomNavigationBar: Obx(
+            () => BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
+              showUnselectedLabels: true,
+              showSelectedLabels: true,
+              selectedLabelStyle: selectedLabelStyle,
+              unselectedLabelStyle: unselectedLabelStyle,
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                    icon: const Icon(Icons.flash_on),
+                    label: AppLocalizations.of(context)!.hit,
+                    backgroundColor: Colors.blue),
+                BottomNavigationBarItem(
+                    icon: const Icon(Icons.view_day),
+                    label: AppLocalizations.of(context)!.recent,
+                    backgroundColor: Colors.blue),
+                BottomNavigationBarItem(
+                    icon: const Icon(Icons.festival),
+                    label: AppLocalizations.of(context)!.events,
+                    backgroundColor: Colors.blue),
+                BottomNavigationBarItem(
+                    icon: const Icon(Icons.chat),
+                    label: AppLocalizations.of(context)!.chats,
+                    backgroundColor: Colors.blue),
+              ],
+              currentIndex: landingController._selectedIndex.value,
+              selectedItemColor: Colors.blue[800],
+              onTap: landingController.changeSelectedIndex,
+              unselectedItemColor: Colors.grey,
+            ),
+          )),
+    );
   }
 }
 

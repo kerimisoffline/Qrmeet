@@ -27,5 +27,12 @@
   "events" : "Events",
   "chats" : "Chats",
   "type_message" : "Type something.",
-  "events_coming_soon" : "Events Coming Soon!"
+  "events_coming_soon" : "Events Coming Soon!",
+  "profile" : "Profile",
+  "settings" : "Settings",
+  "quit": "Çıkış Yap",
+  "update_info" : "Update Information",
+  "share_profile" : "Share Profile",
+  "notification" : "Notifications",
+  "change_pass": "Change Password"
 }
