@@ -24,10 +24,7 @@ class RegisterPage extends StatelessWidget {
   RegisterPage({Key? key}) : super(key: key);
   final RegisterController passController = Get.put(RegisterController());
   final LandingController landingController = Get.find();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController rePassController = TextEditingController();
-
+  final TextEditingController emailController = TextEditingController(),passwordController = TextEditingController(),rePassController = TextEditingController();
   @override
   Widget build(context) {
     return Scaffold(
